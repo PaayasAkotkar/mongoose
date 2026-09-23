@@ -1,3 +1,4 @@
 /golang/go.sum
 /golang/app.exe
-/rust/rust-file-manager/target/Cargo.lock
+/rust/rust-file-manager/target/
+/rust/rust-file-manager/Cargo.lock
