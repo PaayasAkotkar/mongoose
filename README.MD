@@ -1,7 +1,7 @@
 ## Mongoose
 
 <div align="center">
-<img src="./assets/logo.png" width="120px">
+<img src="./assets/logo.png" width="20%">
 </div>
 
 this project is created to increase the privacy & respect the created projects & provide the idle-safety free read & write of the file 
