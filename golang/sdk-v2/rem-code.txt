@@ -1,0 +1,203 @@
+
+// Pull the reads the .mongoose file and returns the channel if read succeed
+// when the pull is called it typically first waits for the
+// metainfo request
+// on false: meaning that something went wrong
+// on true: all good
+//func (a *App) Pull(ctx context.Context) <-chan bool {
+//	ch := make(chan bool, 1)
+//
+//	// focus:
+//	// 1. check the valid regex
+//	// 2. trim it
+//	// 3. use the default store & cd the dir
+//	// 4. create a folder inside the dir
+//	// 5. after that typically write the chunks inside that folder
+//	// 6. typically use the backeup server to push the current file as per the split div array
+//
+//	a.send.OnMessage(ctx, func(m *mongoose.IMessage) {
+//		su := &misc.SafeUnpacker{U: binpacker.NewUnpacker(binary.BigEndian, bytes.NewReader(m.Message.Payload))}
+//
+//		chunkLen := su.Uint64()
+//		chunk := su.Bytes(chunkLen)
+//
+//		reg := regexp.MustCompile(fmt.Sprintf(common.RFormat, PKey))
+//		if reg.Match(chunk) {
+//
+//			tx := misc.AfterColon[[]byte](reg, string(m.Message.Payload))
+//			var m MetaInfo
+//			if err := json.Unmarshal(tx, &m); err != nil {
+//				log.Println(err)
+//			}
+//
+//			//a.track.FileName = m.FileInfo.Name
+//			//a.track.ToComplete = int(m.FileInfo.Size)
+//			//a.track.SaveAs = m.FileName
+//			//a.track.FileHash = m.Hash
+//			//a.track.Trackers = append(a.track.Trackers, m.URLs...)
+//			d, err := os.Getwd()
+//
+//			if err != nil {
+//				log.Println(err)
+//				ch <- false
+//			}
+//
+//			// we pass the bin store
+//			// cause the file will be in chunks
+//			st := a.config.Volume.Bin
+//
+//			mo := mos.IOS{
+//				Target: d,
+//				Find:   st,
+//			}
+//
+//			if err := mo.FindAndCreate(m.SaveFileNameAs, m.Hash); err != nil {
+//				log.Println(err)
+//				ch <- false
+//			}
+//
+//			ch <- true
+//		}
+//		ch <- false
+//
+//	})
+//
+//	return ch
+//}
+//
+//// Push typically reads the pushed trackers and pulls the file from that tracker
+//func (a *App) Push(ctx context.Context, metainfo MetaInfo) {
+//
+//}
+
+// CreateLink writes the link to the os to the config link storage & creates the file chunk
+// that to be sent via golang
+// fileLocation location of the file to create chunks
+//func (a *App) CreateLink(fileLocation string, m MetaInfo) error {
+//
+//	fs, err := os.Open(fileLocation)
+//	if err != nil {
+//		return err
+//	}
+//	defer fs.Close()
+//
+//	st, err := fs.Stat()
+//	if err != nil {
+//		return err
+//	}
+//	m.FileInfo.Name = st.Name()
+//	m.FileInfo.Size = uint64(st.Size())
+//	m.FileInfo.Extension = filepath.Ext(fileLocation)
+//	hasher := md5.New()
+//
+//	if _, err := io.Copy(hasher, fs); err != nil {
+//		return err
+//	}
+//
+//	h := hex.EncodeToString(hasher.Sum(nil))
+//	m.Hash = h
+//
+//	// seek back to beginning of file for chunk reading
+//	// because of hash
+//	if _, err := fs.Seek(0, 0); err != nil {
+//		return err
+//	}
+//
+//	l := a.config.Volume.Link
+//	save := filepath.Join(l, m.SaveFileNameAs+a.config.Ext)
+//
+//	// saving the link
+//	if err := os.WriteFile(save, m.Pack(), 0644); err != nil {
+//		log.Println(err) // ignore
+//	}
+//
+//	log.Println("size: ", misc.ReadSizeString(uint64(st.Size())))
+//
+//	chunkSize := st.Size()
+//	buf := make([]byte, chunkSize) // i know this is horrible 💀 but now if its working we belive 😅
+//
+//	var ace misc.IChunk
+//
+//	for {
+//		n, err := fs.Read(buf)
+//		log.Println("n: ", n)
+//		if n > 0 {
+//			log.Println("write")
+//			c := misc.CreateChunk(buf[:n], int(chunkSize), 1, 8, 3)
+//			ace.Files = append(ace.Files, c.Files...)
+//		}
+//		if err == io.EOF {
+//			break
+//		}
+//		if err != nil {
+//			log.Println("nil", err)
+//			return err
+//		}
+//	}
+//
+//	id := strings.ReplaceAll(uuid.New().String(), "-", "_")
+//	px := filepath.Join(a.config.Volume.Bin, m.SaveFileNameAs, id)
+//	for i, r := range ace.Files {
+//		if err := misc.WriteChunkFile(m.FileInfo.Name, i, r.Chunk, px); err != nil {
+//			log.Println("chunk: ", err)
+//			return err
+//		}
+//	}
+//	a.track.FileData.DirLocation = px
+//	a.track.FileData.FileName = m.FileInfo.Name
+//	a.track.FileData.SaveAs = m.SaveFileNameAs
+//	a.track.FileData.FileHash = m.Hash
+//	m.CreatedDate = common.FormatDateForClient(time.Now())
+//
+//	log.Println("meta: ", m)
+//	return nil
+//}
+
+
+
+//
+//func (a *App) Run(lis string) error {
+//	if err := a.app.Run(lis); err != nil {
+//		return err
+//	}
+//	return nil
+//}
+
+// StartServer starts the client-side UDP server to push files to peers
+// This should be called after sending meta info to the tracker
+//func (a *App) StartServer(ctx context.Context) {
+//	log.Println("[client] starting UDP server for peer connections...")
+//	a.server.OnConnect(ctx, func(m *msocket.Socket) {
+//		log.Println("[client] peer connected to UDP server ✅")
+//	})
+//	a.server.OnDisconnect(ctx, func() {
+//		log.Println("[client] peer disconnected from UDP server")
+//	})
+//	a.server.OnClose(ctx, func() {
+//		log.Println("[client] UDP server connection closed")
+//	})
+//	a.server.OnMessage(ctx, func(m *mongoose1.IMessage) {
+//		log.Println("[client] received request from peer")
+//		if err := m.Error; err != nil {
+//			log.Println("[client] message error:", err)
+//			return
+//		}
+//		if m.Message.Ready {
+//			log.Println("[client] peer request:", string(m.Message.Payload))
+//			// Handle peer request and push file chunks
+//			a.handlePeerRequest(m)
+//		}
+//	})
+//	a.server.Connect(ctx)
+//}
+
+// handlePeerRequest handles incoming peer requests and pushes file chunks
+//func (a *App) handlePeerRequest(m *mongoose1.IMessage) {
+//	// Parse the peer's request to determine which file/chunk they want
+//	// Then push the corresponding chunk from the local file
+//	log.Println("[client] handling peer request - pushing file chunks")
+//
+//	// TODO: Implement actual chunk pushing logic
+//	// This should read from the local file and send chunks to the peer
+//	// Similar to the write() function but for peer-to-peer transfer
+//}
