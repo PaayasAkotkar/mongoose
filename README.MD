@@ -81,7 +81,7 @@ m := &mcrypt.MetaInfo{}
 ```
 
 # References that are used and to be read
-ACE-> [cutting-file-into-pieces](//ref/cutting-file-into-pieces.pdf) this is the name i gave it
+ACE-> [cutting-file-into-pieces](./golang/ref/cutting-file-into-pieces.pdf) this is the name i gave it
 this formula typically helped in file chunking
 
 ## PLAN
