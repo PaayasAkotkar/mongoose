@@ -6,7 +6,7 @@
 
 this project is created to increase the privacy & respect the created projects & provide the idle-safety free read & write of the file 
 
-glimpse 👀
+## Glimpse 👀
 ```golang
 
 // monitor the upcoming request
