@@ -80,13 +80,6 @@ m := &mcrypt.MetaInfo{}
 
 ```
 
-
-# Note
-this was my project of july, tho it is kind of untested
-and I was unable to give time to this project was handling a lot that time
-and I noticed just today that I have repo if I cannot able to complete this I hope someone can complete or use 
-
-
 # References that are used and to be read
 ACE-> [cutting-file-into-pieces](//ref/cutting-file-into-pieces.pdf) this is the name i gave it
 this formula typically helped in file chunking
