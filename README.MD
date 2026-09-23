@@ -165,4 +165,5 @@ writing is done using **rust**
 
 ## Todo
 - file compression methods during chunking
-- remote transfer packets so that we can have something alike ultra-viewer
+- remote transfer packets so that we can create remote desktop
+- more control over go-concurrency method's
